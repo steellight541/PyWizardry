@@ -23,13 +23,47 @@ class MyTextBlock(ScrolledText):
 
         # tab key
         self.bind("<Tab>", self.tab)
+        self.bind("<Shift-Tab>", self.redo_tab)
+
+        # ctrl + back to delete the previous word
+        self.bind("<Control-BackSpace>", self.delete_previous_word)
+
+    def redo_tab(self, event):
+        self.delete_tab_at_front()
+        return "break"
+    
+    def delete_tab_at_front(self):
+        cursor_position = self.index("insert")
+        line, column = map(int, cursor_position.split("."))
+        line_text = self.get(f"{line}.0", f"{line}.end")
+        if line_text.startswith(" " * 4):
+            self.delete(f"{line}.0", f"{line}.4")
+
+    def delete_previous_word(self, event):
+        self.delete_previous_word_at_cursor()
+        return "break"
+
+    def delete_previous_word_at_cursor(self):
+        cursor_position = self.index("insert")
+        line, column = map(int, cursor_position.split("."))
+        line_text = self.get(f"{line}.0", f"{line}.end")
+        prev_word_start = self.find_previous_word_start(line_text, column)
+        self.delete(f"{line}.{prev_word_start}", f"{line}.{column}")
+
+    def find_previous_word_start(self, line_text, column):
+        if column == 0:
+            return 0
+        for i in range(column - 1, -1, -1):
+            if line_text[i] == " ":
+                return i + 1
+        return 0
 
     def tab(self, event):
         self.insert("insert", " " * 4)
         return "break"
-    
+
     def undo(self, event):
-        print("undo")
+        # MAKE IT SO THAT WHEN HOLDING IT DOWN IT KEEPS UNDOING BUT WITH A DELAY
         self.edit_undo()
         return "break"
 
