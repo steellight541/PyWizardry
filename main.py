@@ -13,8 +13,6 @@ class MyEditor(Tk):
         self.text_block = MyTextBlock(self)
 
 
-
-
 if __name__ == "__main__":
     app = MyEditor()
     app.mainloop()

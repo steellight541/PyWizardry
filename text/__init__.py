@@ -2,11 +2,12 @@ from tkinter.scrolledtext import ScrolledText
 from tkinter import Text
 from math import trunc, log10
 
+
 class MyTextBlock(ScrolledText):
     def __init__(self, master):
         super().__init__(master)
         self.master = master
-        self.config(font=("Consolas", 12), width=1, wrap="none", endline="")
+        self.config(font=("Consolas", 12), width=1, wrap="none", endline="", undo=True)
         self.pack(
             side="right",
             fill="both",
@@ -14,6 +15,27 @@ class MyTextBlock(ScrolledText):
         )
         # make it so the textblock has line numbers that dynamically update and scroll with the text
         self.lines_counter = MyLinesNumbers(master, self)
+        # crtl + z and crtl + y
+        self.bind("<Control-z>", self.undo)
+        self.bind("<Control-Z>", self.undo)
+        self.bind("<Control-y>", self.redo)
+        self.bind("<Control-Y>", self.redo)
+
+        # tab key
+        self.bind("<Tab>", self.tab)
+
+    def tab(self, event):
+        self.insert("insert", " " * 4)
+        return "break"
+    
+    def undo(self, event):
+        print("undo")
+        self.edit_undo()
+        return "break"
+
+    def redo(self, event):
+        self.edit_redo()
+        return "break"
 
 
 class MyLinesNumbers(Text):
@@ -55,9 +77,9 @@ class MyLinesNumbers(Text):
             self.insert("1.0", line_numbers)
             self.config(state="disabled")
 
-        if self.text_size != trunc(log10(lines_amt)) + 2:
-            self.text_size = trunc(log10(lines_amt)) + 2
-            self.config(width=self.text_size)
+        if self.text_size != len(str(lines_amt)) + 1:
+            self.text_size = len(str(lines_amt)) + 1
+            self.config(width=self.text_size + 1 if self.text_size > 4 else 4)
 
     def update_yview(self):
         self.yview_moveto(self.text_block.yview()[0])
