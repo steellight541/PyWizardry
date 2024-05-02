@@ -4,12 +4,6 @@ from .preferences import MyPreferencesMenu
 
 
 class MyMenuBar(Menu):
-    """_summary_
-
-    Args:
-        tk (_type_): _description_
-    """
-
     def __init__(self, master):
         super().__init__(master)
         self.master = master

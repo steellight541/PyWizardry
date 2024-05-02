@@ -4,19 +4,6 @@ from text import MyTextBlock  # importing the custom text block
 
 
 class MyEditor(Tk):
-    """A custom application class for My App.
-
-    This class inherits from the `tk.Tk` class and provides a custom application window for My App.
-
-    Args:
-        tk (type): The tkinter module.
-
-    Attributes:
-        title (str): The title of the application window.
-        geometry (str): The size of the application window.
-
-    """
-
     def __init__(self):
         super().__init__()
         self.title("My Text Editor")
