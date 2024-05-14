@@ -4,11 +4,14 @@ import keyword
 
 tags = {
     "colors": {
-        "red": "red",
         "green": "green",
+        "red": "red",
     },
     "styles": {
-        "bold": "helvetica 12 bold",
+        # fonts
+        "bold": "Consolas 12 bold",
+        "italic": "Consolas 12 italic",
+        "underline": "Consolas 12 underline",
     },
 }
 
@@ -28,6 +31,8 @@ class MyTextBlock(ScrolledText):
 
         self.add_tags()
         self.highlight = {}
+        self.highlight_color = "green"
+        self.highlight_style = "bold"
         self.set_default_keywords()
         self.bind("<KeyRelease>", lambda event: self.check_words())
 
@@ -53,11 +58,11 @@ class MyTextBlock(ScrolledText):
             expand=True,
         )
 
-    def set_default_keywords(self, color="green", style="bold"):
+    def set_default_keywords(self):
         for k in keyword.kwlist:
             self.highlight[k] = {
-                "color": tags["colors"][color],
-                "style": tags["styles"][style],
+                "color": self.highlight_color,
+                "style": self.highlight_style,
             }
 
     def add_tags(self):
@@ -76,6 +81,7 @@ class MyTextBlock(ScrolledText):
         self.insert(END, text)
 
     def check_words(self):
+        self.set_default_keywords()
         self.clear_tags()
         # Highlight the word only if it is a whole word and after the word is a space or a newline start is a string of a float so slicing doesn't work
         for word, value in self.highlight.items():
@@ -84,10 +90,8 @@ class MyTextBlock(ScrolledText):
                 start = self.search(word, start, END)
                 if not start:
                     break
-                if (self.get(f"{start}-1c") not in [" ", "\n", ""]) and start != "1.0":
-                    break
                 end = f"{start}+{len(word)}c"
-                if self.get(end) in [" ", "\n"]:
+                if self.get(end) in [" ", "\n"] or not (self.get(f"{start}-1c") not in [" ", "\n", ""]) and start != "1.0":
                     self.tag_add(word, start, end)
                     self.tag_add(value["color"], start, end)
                     self.tag_add(value["style"], start, end)
