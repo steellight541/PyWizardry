@@ -1,2 +1,5 @@
 **/__pycache__
 **/.git
+
+menu/preference_settings/*
+!menu/preference_settings/default.json
