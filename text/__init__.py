@@ -1,13 +1,19 @@
 from tkinter.scrolledtext import ScrolledText
 from tkinter import Text
-from math import trunc, log10
+from time import sleep
 
 
 class MyTextBlock(ScrolledText):
     def __init__(self, master):
         super().__init__(master)
         self.master = master
-        self.config(font=("Consolas", 12), width=1, wrap="none", endline="", undo=True)
+        self.config(
+            font=("Consolas", 12),
+            width=1,
+            wrap="none",
+            endline="",
+            undo=True,
+        )
         self.pack(
             side="right",
             fill="both",
@@ -31,7 +37,7 @@ class MyTextBlock(ScrolledText):
     def redo_tab(self, event):
         self.delete_tab_at_front()
         return "break"
-    
+
     def delete_tab_at_front(self):
         cursor_position = self.index("insert")
         line, column = map(int, cursor_position.split("."))

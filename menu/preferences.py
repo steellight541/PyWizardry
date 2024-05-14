@@ -43,11 +43,16 @@ class MyThemesMenu(Menu):
     def set_text_block(self, fg, bg):
         self.master.text_block.config(fg=fg, bg=bg) # type: ignore
 
+    def set_cursor_color(self, color):
+        self.master.text_block.config(insertbackground=color)
+
     def set_light_theme(self):
+        self.set_cursor_color("black")
         self.set_line_numbers("black", "lightgrey")
         self.set_text_block("black", "white")
 
     def set_dark_theme(self):
+        self.set_cursor_color("white")
         self.set_line_numbers("white", "black")
         self.set_text_block("white", "black")
 
