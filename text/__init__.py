@@ -91,7 +91,7 @@ class MyTextBlock(ScrolledText):
                 if not start:
                     break
                 end = f"{start}+{len(word)}c"
-                if self.get(end) in [" ", "\n"] or not (self.get(f"{start}-1c") not in [" ", "\n", ""]) and start != "1.0":
+                if (self.get(f"{start}-1c") in [" ", "\n", ""] or start == "1.0") and (self.get(end) in [" ", "\n", ""] or end == END):
                     self.tag_add(word, start, end)
                     self.tag_add(value["color"], start, end)
                     self.tag_add(value["style"], start, end)
