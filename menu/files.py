@@ -15,6 +15,7 @@ class MyFileMenu(Menu):
             print("Selected folder:", TXT)
             self.master.text_block.delete("1.0", "end") # type: ignore
             self.master.text_block.insert("1.0", TXT) # type: ignore
+            self.master.text_block.check_words()
 
     def save_file(self):
         folder_path = filedialog.asksaveasfilename(

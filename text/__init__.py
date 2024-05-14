@@ -1,20 +1,16 @@
 from tkinter.scrolledtext import ScrolledText
-from tkinter import Text, Canvas
-from time import sleep
+from tkinter import Text, END
+import keyword
 
-
-class MyTextBlockCanvas(Canvas):
-    # this class is used to have under the text block so we can use gradient colors for themes
-    def __init__(self, master, text_block):
-        super().__init__(master)
-        self.master = master
-        self.text_block = text_block
-        self.config(
-            bg="lightgrey",
-            highlightthickness=0,
-        )
-        self.pack(side="right", fill="both", expand=True)
-        self.update_canvas()
+tags = {
+    "colors": {
+        "red": "red",
+        "green": "green",
+    },
+    "styles": {
+        "bold": "helvetica 12 bold",
+    },
+}
 
 
 class MyTextBlock(ScrolledText):
@@ -29,11 +25,12 @@ class MyTextBlock(ScrolledText):
             endline="",
             undo=True,
         )
-        self.pack(
-            side="right",
-            fill="both",
-            expand=True,
-        )
+
+        self.add_tags()
+        self.highlight = {}
+        self.set_default_keywords()
+        self.bind("<KeyRelease>", lambda event: self.check_words())
+
         # make it so the textblock has line numbers that dynamically update and scroll with the text
         self.lines_counter = MyLinesNumbers(master, self)
         # crtl + z and crtl + y
@@ -48,6 +45,55 @@ class MyTextBlock(ScrolledText):
 
         # ctrl + back to delete the previous word
         self.bind("<Control-BackSpace>", self.delete_previous_word)
+        self.check_words()
+
+        self.pack(
+            side="right",
+            fill="both",
+            expand=True,
+        )
+
+    def set_default_keywords(self, color="green", style="bold"):
+        for k in keyword.kwlist:
+            self.highlight[k] = {
+                "color": tags["colors"][color],
+                "style": tags["styles"][style],
+            }
+
+    def add_tags(self):
+        for tag, value in tags["colors"].items():
+            self.tag_config(tag, foreground=value)
+        for tag, value in tags["styles"].items():
+            self.tag_config(tag, font=value)
+
+    def clear_tags(self):
+        for tag in tags["colors"]:
+            self.tag_remove(tag, "1.0", END)
+        for tag in tags["styles"]:
+            self.tag_remove(tag, "1.0", END)
+
+    def write(self, text):
+        self.insert(END, text)
+
+    def check_words(self):
+        self.clear_tags()
+        # Highlight the word only if it is a whole word and after the word is a space or a newline start is a string of a float so slicing doesn't work
+        for word, value in self.highlight.items():
+            start = 1.0
+            while True:
+                start = self.search(word, start, END)
+                if not start:
+                    break
+                if (self.get(f"{start}-1c") not in [" ", "\n", ""]) and start != "1.0":
+                    break
+                end = f"{start}+{len(word)}c"
+                if self.get(end) in [" ", "\n"]:
+                    self.tag_add(word, start, end)
+                    self.tag_add(value["color"], start, end)
+                    self.tag_add(value["style"], start, end)
+                # infront of the word is a space or a newline or ""
+
+                start = end
 
     def redo_tab(self, event):
         self.delete_tab_at_front()
