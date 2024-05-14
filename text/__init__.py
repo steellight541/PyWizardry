@@ -1,12 +1,27 @@
 from tkinter.scrolledtext import ScrolledText
-from tkinter import Text
+from tkinter import Text, Canvas
 from time import sleep
+
+
+class MyTextBlockCanvas(Canvas):
+    # this class is used to have under the text block so we can use gradient colors for themes
+    def __init__(self, master, text_block):
+        super().__init__(master)
+        self.master = master
+        self.text_block = text_block
+        self.config(
+            bg="lightgrey",
+            highlightthickness=0,
+        )
+        self.pack(side="right", fill="both", expand=True)
+        self.update_canvas()
 
 
 class MyTextBlock(ScrolledText):
     def __init__(self, master):
         super().__init__(master)
         self.master = master
+
         self.config(
             font=("Consolas", 12),
             width=1,
